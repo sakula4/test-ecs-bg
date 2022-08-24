@@ -20,6 +20,9 @@ jobs:
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
+      - name: Terraform Version
+        run: terraform version
+
       - name: Terraform Init
         run: terraform init
         env:
