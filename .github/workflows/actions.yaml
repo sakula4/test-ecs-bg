@@ -17,7 +17,7 @@ jobs:
         uses: hashicorp/terraform-github-actions/init@v0.4.0
         env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            TF_ACTION_WORKING_DIR: 'test-ecs-bg'
+            TF_ACTION_WORKING_DIR: '.'
             AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
             AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
@@ -28,6 +28,6 @@ jobs:
         uses: hashicorp/terraform-github-actions/apply@v0.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TF_ACTION_WORKING_DIR: 'test-ecs-bg'
+          TF_ACTION_WORKING_DIR: '.'
           AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
