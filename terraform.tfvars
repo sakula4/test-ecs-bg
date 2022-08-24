@@ -11,5 +11,5 @@ vpc_subnet_ids = ["subnet-3235221c","subnet-82a57dcf","subnet-cd7a26f3"]
 alb_name = "ecs-fargate-bg-alb"
 is_internal_alb = false
 ssl_policy = "ELBSecurityPolicy-TLS-1-1-2017-01"
-enable_green_env = true
-traffic_distribution = "blue-90"
+enable_green_env = false
+traffic_distribution = "blue"
