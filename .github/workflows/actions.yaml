@@ -46,3 +46,9 @@ jobs:
       - name: Terraform Apply
         run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=blue-90"
 
+      - name: Terraform Apply
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
+
+      - name: Terraform Apply
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=green"
+
