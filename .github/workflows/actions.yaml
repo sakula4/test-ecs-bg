@@ -5,6 +5,19 @@ on:
     branches:
       - main
 
+inputs:
+  traffic_distribution:
+    description: traffic distibution between blue-green env
+    default: "blue"
+
+env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    TF_ACTION_WORKING_DIR: '.'
+    AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    TF_VAR_TRAFFIC_DISTRIBUTION: ${{ inputs.traffic_distribution }}
+
+
 jobs:
   tf_fmt:
     name: Deploy Site
@@ -25,22 +38,13 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
-        env:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            TF_ACTION_WORKING_DIR: '.'
-            AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-            AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
       - name: Terraform Validate
         run: terraform validate
 
       - name: Terraform Plan
         run: terraform plan
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TF_ACTION_WORKING_DIR: '.'
-          AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform Apply
         run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=blue-90"
