@@ -12,4 +12,3 @@ alb_name = "ecs-fargate-bg-alb"
 is_internal_alb = false
 ssl_policy = "ELBSecurityPolicy-TLS-1-1-2017-01"
 enable_green_env = true
-traffic_distribution = "split"

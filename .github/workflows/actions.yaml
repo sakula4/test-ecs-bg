@@ -43,7 +43,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Terraform Apply
-        run: terraform apply --auto-approve
+        run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=blue-90"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TF_ACTION_WORKING_DIR: '.'
