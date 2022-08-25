@@ -36,24 +36,8 @@ jobs:
       - name: Terraform Init
         run: terraform init
 
-
       - name: Terraform Validate
         run: terraform validate
-
-      # - name: Terraform Plan
-      #   run: terraform plan
-
-      # - name: Terraform Apply with 10% traffic to new env
-      #   run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=blue-90"
-
-      # - name: Terraform Apply with 50% traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
-
-      # - name: Terraform Apply with 90% traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=green-90"
-
-      # - name: Terraform Apply with all traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=green"
 
       - name: Set environment variable
         run: echo "current=blue" >> $GITHUB_ENV
