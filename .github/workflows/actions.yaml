@@ -31,15 +31,16 @@ jobs:
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: dawidd6/action-download-artifact@v2
         with:
           name: deploy-state
+          path: extract_here
 
       - name: Save artifact value to env
         run: echo "current=$( cat deploy-state.txt )" >> $GITHUB_ENV
 
       - name: test if key exists
-        run: echo ${{ env.current}}      
+        run: echo ${{ env.current }}      
 
       # - name: Terraform Version
       #   run: terraform version
