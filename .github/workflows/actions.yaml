@@ -63,3 +63,13 @@ jobs:
 
       - name: test value
         run: echo ${{ env.current }}
+
+      - name: export artifact
+        run: |
+          echo ${{ env.current }} > deploy-state.txt
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: deploy-state
+          path: deploy-state.txt
