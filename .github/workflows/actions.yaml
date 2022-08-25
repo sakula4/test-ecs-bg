@@ -38,17 +38,17 @@ jobs:
           path: .
 
       - name: Save artifact value to env
-        run: echo "current_deployment=$( cat deploy-state.txt )" >> $GITHUB_ENV
+        run: echo "CURRENT_DEPLOYMENT=$( cat deploy-state.txt )" >> $GITHUB_ENV
 
       - name: test if key exists
-        run: echo ${{ env.current_deployment }}
+        run: echo ${{ env.CURRENT_DEPLOYMENT }}
 
       - name: test values before update
         run: echo $GITHUB_ENV
 
       - name: update new deployment value based on current deployment (blue <-> green)
         run: |
-          if [ ${{ env.current_deployment }} = 'blue' ]; then
+          if [ ${{ env.CURRENT_DEPLOYMENT }} = 'blue' ]; then
             echo "NEW_DEPLOYMENT=green" >> $GITHUB_ENV
           else
             echo "NEW_DEPLOYMENT=blue" >> $GITHUB_ENV
@@ -57,41 +57,33 @@ jobs:
       - name: test values after update
         run: echo $GITHUB_ENV
 
+      - name: Terraform Version
+        run: terraform version
 
-      # - name: Terraform Version
-      #   run: terraform version
+      - name: Terraform Init
+        run: terraform init
 
-      # - name: Terraform Init
-      #   run: terraform init
+      - name: Terraform Validate
+        run: terraform validate
 
+      - name: Terraform Plan
+        run: terraform plan
 
-      # - name: Terraform Validate
-      #   run: terraform validate
+      - name: Terraform Apply with 10% traffic to new env
+        run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=${{ env.CURRENT_DEPLOYMENT }}-90"
 
-      # - name: Terraform Plan
-      #   run: terraform plan
+      - name: Terraform Apply with 50% traffic to new env
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
 
-      # - name: Terraform Apply with 10% traffic to new env
-      #   run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=blue-90"
+      - name: Terraform Apply with 90% traffic to new env
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}-90"
 
-      # - name: Terraform Apply with 50% traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
-
-      # - name: Terraform Apply with 90% traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=green-90"
-
-      # - name: Terraform Apply with all traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=green"
-
-      - name: Set environment variable
-        run: echo "current_deployment=blue" >> $GITHUB_ENV
-
-      - name: test value
-        run: echo ${{ env.current_deployment }}
+      - name: Terraform Apply with all traffic to new env
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
 
       - name: export artifact
         run: |
-          echo ${{ env.current_deployment }} > deploy-state.txt
+          echo ${{ env.NEW_DEPLOYMENT }} > deploy-state.txt
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3

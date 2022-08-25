@@ -1,0 +1,97 @@
+name: Manual trigger blue green Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: Select the deployment enviornment
+        options:
+        - blue
+        - green
+
+
+
+env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    TF_ACTION_WORKING_DIR: '.'
+    AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
+    AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    TF_VAR_traffic_distribution: "blue-90"
+    NEW_DEPLOYMENT: ${{ github.event.inputs.environment }}
+
+
+jobs:
+  tf_fmt:
+    name: Deploy Site
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: get-ssh-private-key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          name: id_rsa
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+
+      # - name: Download artifact
+      #   uses: dawidd6/action-download-artifact@v2
+      #   with:
+      #     name: deploy-state
+      #     path: .
+
+      # - name: Save artifact value to env
+      #   run: echo "CURRENT_DEPLOYMENT=$( cat deploy-state.txt )" >> $GITHUB_ENV
+
+      # - name: test if key exists
+      #   run: echo ${{ env.CURRENT_DEPLOYMENT }}
+
+      # - name: test values before update
+      #   run: echo $GITHUB_ENV
+
+      # - name: update new deployment value based on current deployment (blue <-> green)
+      #   run: |
+      #     if [ ${{ env.CURRENT_DEPLOYMENT }} = 'blue' ]; then
+      #       echo "NEW_DEPLOYMENT=green" >> $GITHUB_ENV
+      #     else
+      #       echo "NEW_DEPLOYMENT=blue" >> $GITHUB_ENV
+      #     fi
+
+      - name: test values after update
+        run: echo $GITHUB_ENV
+
+      - name: Terraform Version
+        run: terraform version
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan
+
+      # - name: Terraform Apply with 10% traffic to new env
+      #   run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=${{ env.CURRENT_DEPLOYMENT }}-90"
+
+      # - name: Terraform Apply with 50% traffic to new env
+      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
+
+      # - name: Terraform Apply with 90% traffic to new env
+      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}-90"
+
+      - name: Terraform Apply with all traffic to new env
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
+
+      - name: export artifact
+        run: |
+          echo ${{ env.NEW_DEPLOYMENT }} > deploy-state.txt
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: deploy-state
+          path: deploy-state.txt
