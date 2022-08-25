@@ -13,6 +13,7 @@ env:
     AWS_ACCESS_KEY_ID:  ${{ secrets.AWS_ACCESS_KEY_ID }}
     AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     TF_VAR_traffic_distribution: "blue-90"
+    NEW_DEPLOYMENT: 
 
 
 jobs:
@@ -37,10 +38,25 @@ jobs:
           path: .
 
       - name: Save artifact value to env
-        run: echo "current=$( cat deploy-state.txt )" >> $GITHUB_ENV
+        run: echo "current_deployment=$( cat deploy-state.txt )" >> $GITHUB_ENV
 
       - name: test if key exists
-        run: echo ${{ env.current }}      
+        run: echo ${{ env.current_deployment }}
+
+      - name: test values before update
+        run: echo $GITHUB_ENV
+
+      - name: update new deployment value based on current deployment (blue <-> green)
+        run: |
+          if [ ${{ env.current deployment }} = 'blue' ]; then
+            echo "NEW_DEPLOYMENT=green" >> $GITHUB_ENV
+          else
+            echo "NEW_DEPLOYMENT=blue" >> $GITHUB_ENV
+          fi
+
+      - name: test values after update
+        run: echo $GITHUB_ENV
+
 
       # - name: Terraform Version
       #   run: terraform version
@@ -68,14 +84,14 @@ jobs:
       #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=green"
 
       - name: Set environment variable
-        run: echo "current=blue" >> $GITHUB_ENV
+        run: echo "current_deployment=blue" >> $GITHUB_ENV
 
       - name: test value
-        run: echo ${{ env.current }}
+        run: echo ${{ env.current_deployment }}
 
       - name: export artifact
         run: |
-          echo ${{ env.current }} > deploy-state.txt
+          echo ${{ env.current_deployment }} > deploy-state.txt
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
