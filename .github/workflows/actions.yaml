@@ -48,7 +48,7 @@ jobs:
 
       - name: update new deployment value based on current deployment (blue <-> green)
         run: |
-          if [ ${{ env.current deployment }} = 'blue' ]; then
+          if [ ${{ env.current_deployment }} = 'blue' ]; then
             echo "NEW_DEPLOYMENT=green" >> $GITHUB_ENV
           else
             echo "NEW_DEPLOYMENT=blue" >> $GITHUB_ENV
