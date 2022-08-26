@@ -81,9 +81,10 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "us-east-1"      
+          aws-region: "us-east-1"   
+
       - name: Add hello SecureString to SSM
-        uses: dwardu89/aws-ssm-parameter-store@v1
+        uses: dwardu89/aws-ssm-parameter-store@v2
         with:
           ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
           ssm-value: ${{ env.NEW_DEPLOYMENT }}
