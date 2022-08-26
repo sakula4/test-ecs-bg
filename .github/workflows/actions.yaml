@@ -82,4 +82,4 @@ jobs:
           ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
           ssm-value: ${{ env.NEW_DEPLOYMENT }}
           ssm-value-overwrite: true
-          aws-region: ${{ env.AWS_DEFAULT_REGION }}
+          aws-region: "us-east-1"
