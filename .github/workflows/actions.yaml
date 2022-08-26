@@ -84,7 +84,7 @@ jobs:
           aws-region: "us-east-1"   
 
       - name: Add hello SecureString to SSM
-        uses: dwardu89/aws-ssm-parameter-store@v2
+        uses: dwardu89/aws-ssm-parameter-store@v2.0.0
         with:
           ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
           ssm-value: ${{ env.NEW_DEPLOYMENT }}
