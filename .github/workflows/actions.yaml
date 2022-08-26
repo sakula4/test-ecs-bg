@@ -14,7 +14,7 @@ env:
     AWS_SECRET_ACCESS_KEY:  ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     TF_VAR_traffic_distribution: "blue-90"
     NEW_DEPLOYMENT: 
-    AWS_DEFAULT_REGION: "us-east-1"
+    AWS_REGION: "us-east-1"
 
 jobs:
   tf_fmt:
@@ -82,4 +82,4 @@ jobs:
           ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
           ssm-value: ${{ env.NEW_DEPLOYMENT }}
           ssm-value-overwrite: true
-          region: "us-east-1"
+          aws-region: "us-east-1"
