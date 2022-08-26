@@ -76,7 +76,12 @@ jobs:
 
       # - name: Terraform Apply with all traffic to new env
       #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
-      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: "us-east-1"      
       - name: Add hello SecureString to SSM
         uses: dwardu89/aws-ssm-parameter-store@v1
         with:
