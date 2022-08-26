@@ -80,4 +80,5 @@ jobs:
         uses: dwardu89/aws-ssm-parameter-store@v1
         with:
           ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
-          ssm-value-overwrite: ${{ env.NEW_DEPLOYMENT }}
+          ssm-value: ${{ env.NEW_DEPLOYMENT }}
+          ssm-value-overwrite: true
