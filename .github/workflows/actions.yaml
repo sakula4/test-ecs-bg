@@ -76,6 +76,7 @@ jobs:
 
       # - name: Terraform Apply with all traffic to new env
       #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
+      
       - name: Add hello SecureString to SSM
         uses: dwardu89/aws-ssm-parameter-store@v1
         with:
