@@ -31,25 +31,13 @@ jobs:
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }}
 
-      - name: Download artifact
-        uses: dawidd6/action-download-artifact@v2
-        with:
-          name: deploy-state
-          path: .
-
       - name: Get value from Parameter store
         uses: Bardavon-Health/actions-aws-ssm-params-to-env@v1.2
         with:
-          ssm-path: /test/blue-green
-
-      - name: Save artifact value to env
-        run: echo "CURRENT_DEPLOYMENT=$( cat deploy-state.txt )" >> $GITHUB_ENV
+          ssm-path: /test/bg/CURRENT_DEPLOYMENT
 
       - name: test if key exists
         run: echo ${{ env.CURRENT_DEPLOYMENT }}
-
-      - name: test if key exists
-        run: echo ${{ env.blue-green }}
 
       - name: test values before update
         run: echo $GITHUB_ENV
@@ -88,13 +76,8 @@ jobs:
 
       # - name: Terraform Apply with all traffic to new env
       #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
-
-      - name: export artifact
-        run: |
-          echo ${{ env.NEW_DEPLOYMENT }} > deploy-state.txt
-
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+      - name: Add hello SecureString to SSM
+        uses: dwardu89/aws-ssm-parameter-store@v1
         with:
-          name: deploy-state
-          path: deploy-state.txt
+          ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
+          ssm-value-overwrite: ${{ env.NEW_DEPLOYMENT }}
