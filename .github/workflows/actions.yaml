@@ -37,8 +37,10 @@ jobs:
           name: deploy-state
           path: .
 
-      - uses: Bardavon-Health/actions-aws-ssm-params-to-env@v1.2
-        with: /test/blue-green
+      - name: Get value from Parameter store
+        uses: Bardavon-Health/actions-aws-ssm-params-to-env@v1.2
+        with:
+          ssm-path: /test/blue-green
 
       - name: Save artifact value to env
         run: echo "CURRENT_DEPLOYMENT=$( cat deploy-state.txt )" >> $GITHUB_ENV
