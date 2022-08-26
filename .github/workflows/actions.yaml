@@ -83,3 +83,4 @@ jobs:
           ssm-value: ${{ env.NEW_DEPLOYMENT }}
           ssm-value-overwrite: true
           aws-region: "us-east-1"
+          ssm-value-type: "String"
