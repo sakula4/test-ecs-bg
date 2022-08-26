@@ -37,11 +37,17 @@ jobs:
           name: deploy-state
           path: .
 
+      - uses: Bardavon-Health/actions-aws-ssm-params-to-env@v1.2
+        with: /test/blue-green
+
       - name: Save artifact value to env
         run: echo "CURRENT_DEPLOYMENT=$( cat deploy-state.txt )" >> $GITHUB_ENV
 
       - name: test if key exists
         run: echo ${{ env.CURRENT_DEPLOYMENT }}
+
+      - name: test if key exists
+        run: echo ${{ env.blue-green }}
 
       - name: test values before update
         run: echo $GITHUB_ENV
@@ -57,29 +63,29 @@ jobs:
       - name: test values after update
         run: echo $GITHUB_ENV
 
-      - name: Terraform Version
-        run: terraform version
+      # - name: Terraform Version
+      #   run: terraform version
 
-      - name: Terraform Init
-        run: terraform init
+      # - name: Terraform Init
+      #   run: terraform init
 
-      - name: Terraform Validate
-        run: terraform validate
+      # - name: Terraform Validate
+      #   run: terraform validate
 
-      - name: Terraform Plan
-        run: terraform plan
+      # - name: Terraform Plan
+      #   run: terraform plan
 
-      - name: Terraform Apply with 10% traffic to new env
-        run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=${{ env.CURRENT_DEPLOYMENT }}-90"
+      # - name: Terraform Apply with 10% traffic to new env
+      #   run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=${{ env.CURRENT_DEPLOYMENT }}-90"
 
-      - name: Terraform Apply with 50% traffic to new env
-        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
+      # - name: Terraform Apply with 50% traffic to new env
+      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
 
-      - name: Terraform Apply with 90% traffic to new env
-        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}-90"
+      # - name: Terraform Apply with 90% traffic to new env
+      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}-90"
 
-      - name: Terraform Apply with all traffic to new env
-        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
+      # - name: Terraform Apply with all traffic to new env
+      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
 
       - name: export artifact
         run: |
