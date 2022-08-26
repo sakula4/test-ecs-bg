@@ -1,7 +1,7 @@
 name: test-workflow-dispatch
 
 on:
-  workflow_dispatch:
+  repository_dispatch:
   schedule:
     - cron: '5 12 * * 0'
 
