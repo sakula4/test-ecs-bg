@@ -96,5 +96,5 @@ jobs:
       - name: Store response payload to file
         run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
       - name: Test execution
-        if: ${{ fromJSON(invocation-response.json).state }} == 'healthy'
+        if: contains(fromJSON(steps.healthCheckLambda.outputs.response).Payload, 'healthy')
         run: echo 'Test passed'
