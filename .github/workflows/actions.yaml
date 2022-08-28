@@ -76,14 +76,14 @@ jobs:
 
       # - name: Terraform Apply with all traffic to new env
       #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
-      - name: Add hello SecureString to SSM
-        uses: dwardu89/aws-ssm-parameter-store@v2.0.0
-        with:
-          ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
-          ssm-value: ${{ env.NEW_DEPLOYMENT }}
-          ssm-value-overwrite: true
-          aws-region: "us-east-1"
-          ssm-value-type: "String"
+      # - name: Add hello SecureString to SSM
+      #   uses: dwardu89/aws-ssm-parameter-store@v2.0.0
+      #   with:
+      #     ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
+      #     ssm-value: ${{ env.NEW_DEPLOYMENT }}
+      #     ssm-value-overwrite: true
+      #     aws-region: "us-east-1"
+      #     ssm-value-type: "String"
 
       - name: Invoke Lambda Function
         id: healthCheckLambda
@@ -92,6 +92,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           FunctionName: canary-deployment-StepFunction-CheckHealthFunction-W1OrpwQMHhnJ
-          Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }'      
-      - name: Store response payload to file
-        run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
+          Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }' 
+        - name: Store response payload to file
+          run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
