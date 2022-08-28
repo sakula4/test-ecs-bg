@@ -84,3 +84,9 @@ jobs:
           ssm-value-overwrite: true
           aws-region: "us-east-1"
           ssm-value-type: "String"
+
+      - name: Invoke Lambda Function
+        uses: gagoar/invoke-aws-lambda@master
+        with:
+          FunctionName: canary-deployment-StepFunction-CheckHealthFunction-W1OrpwQMHhnJ
+          Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }'      
