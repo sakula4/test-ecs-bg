@@ -95,3 +95,6 @@ jobs:
           Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }' 
       - name: Store response payload to file
         run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
+      - name: Test execution
+        if: ${{ fromJSON(steps.healthCheckLambda.outputs.response.State).Payload }} == 'healthy'
+        run: echo 'Test passed'
