@@ -93,5 +93,5 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           FunctionName: canary-deployment-StepFunction-CheckHealthFunction-W1OrpwQMHhnJ
           Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }' 
-        - name: Store response payload to file
-          run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
+      - name: Store response payload to file
+        run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
