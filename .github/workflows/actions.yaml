@@ -53,48 +53,63 @@ jobs:
       - name: test values after update
         run: echo $GITHUB_ENV
 
-      # - name: Terraform Version
-      #   run: terraform version
+      - name: Terraform Version
+        run: terraform version
 
-      # - name: Terraform Init
-      #   run: terraform init
+      - name: Terraform Init
+        run: terraform init
 
-      # - name: Terraform Validate
-      #   run: terraform validate
+      - name: Terraform Validate
+        run: terraform validate
 
-      # - name: Terraform Plan
-      #   run: terraform plan
+      - name: Terraform Plan
+        run: terraform plan
 
-      # - name: Terraform Apply with 10% traffic to new env
-      #   run: sleep 30 && terraform apply --auto-approve --var "traffic_distribution=${{ env.CURRENT_DEPLOYMENT }}-90"
+      - name: Terraform apply and route 10% traffic
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.CURRENT_DEPLOYMENT }}-90"
 
-      # - name: Terraform Apply with 50% traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
-
-      # - name: Terraform Apply with 90% traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}-90"
-
-      # - name: Terraform Apply with all traffic to new env
-      #   run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"
-      # - name: Add hello SecureString to SSM
-      #   uses: dwardu89/aws-ssm-parameter-store@v2.0.0
-      #   with:
-      #     ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
-      #     ssm-value: ${{ env.NEW_DEPLOYMENT }}
-      #     ssm-value-overwrite: true
-      #     aws-region: "us-east-1"
-      #     ssm-value-type: "String"
-
-      - name: Invoke Lambda Function
-        id: healthCheckLambda
+      - name: Invoke Lambda Function to check health for new deployment
+        id: healthCheckLambda1
         uses: gagoar/invoke-aws-lambda@master
         with:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           FunctionName: canary-deployment-StepFunction-CheckHealthFunction-W1OrpwQMHhnJ
           Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }' 
-      - name: Store response payload to file
-        run: echo '${{ fromJSON(steps.healthCheckLambda.outputs.response).Payload }}' > invocation-response.json      
-      - name: Test execution
-        if: contains(fromJSON(steps.healthCheckLambda.outputs.response).Payload, 'healthy')
-        run: echo 'Test passed'
+      - name: Terraform apploy with 50% traffic to new target
+        if: contains(fromJSON(steps.healthCheckLambda1.outputs.response).Payload, 'healthy')
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=split"
+      
+      - name: Health check after splitting the traffic
+        id: healthCheckLambda2
+        uses: gagoar/invoke-aws-lambda@master
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          FunctionName: canary-deployment-StepFunction-CheckHealthFunction-W1OrpwQMHhnJ
+          Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }' 
+      - name: Terraform apploy with 90% traffic to new target
+        if: contains(fromJSON(steps.healthCheckLambda2.outputs.response).Payload, 'healthy')
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}-90"        
+
+      - name: Final health check after routing 90% traffic
+        id: healthCheckLambda3
+        uses: gagoar/invoke-aws-lambda@master
+        with:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          FunctionName: canary-deployment-StepFunction-CheckHealthFunction-W1OrpwQMHhnJ
+          Payload: '{ "target": "arn:aws:elasticloadbalancing:us-east-1:076699035263:targetgroup/canar-Targe-1ETRJGYLXCW98/b0e51ebe387cd0fe" }' 
+      - name: Route all traffic to new environment
+        if: contains(fromJSON(steps.healthCheckLambda3.outputs.response).Payload, 'healthy')
+        run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"        
+
+      - name: Add hello SecureString to SSM
+        uses: dwardu89/aws-ssm-parameter-store@v2.0.0
+        with:
+          ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
+          ssm-value: ${{ env.NEW_DEPLOYMENT }}
+          ssm-value-overwrite: true
+          aws-region: "us-east-1"
+          ssm-value-type: "String"        
+        
