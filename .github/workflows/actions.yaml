@@ -104,7 +104,7 @@ jobs:
         if: contains(fromJSON(steps.healthCheckLambda3.outputs.response).Payload, 'healthy')
         run: sleep 90 && terraform apply --auto-approve --var "traffic_distribution=${{ env.NEW_DEPLOYMENT }}"        
 
-      - name: Add hello SecureString to SSM
+      - name: Update current deployment value.
         uses: dwardu89/aws-ssm-parameter-store@v2.0.0
         with:
           ssm-path: "/test/bg/CURRENT_DEPLOYMENT"
