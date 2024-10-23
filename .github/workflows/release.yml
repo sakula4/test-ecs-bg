@@ -1,0 +1,37 @@
+name: Create Release
+on:
+  push:
+    branches:
+      - 'main'
+    paths-ignore:
+      - 'README.md'
+      - '_docs/**'   
+      - '**/*.md'      
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+  pull-requests: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout-repo
+        uses: actions/checkout@v3.6.0
+
+      - name: get-merged-pull-request
+        uses: actions-ecosystem/action-get-merged-pull-request@v1.0.1
+        id: get-merged-pull-request
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: create-release
+        uses: release-drafter/release-drafter@v5.22.0
+        with:
+          publish: false
+          prerelease: false
+          config-name: release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
